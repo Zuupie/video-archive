@@ -3,8 +3,18 @@ import shutil
 from pathlib import Path
 import datetime
 import re
+import sys
 
-ARCHIVE_ROOT = Path("data/archive")
+# Pfad zur EXE, falls gebaut, sonst zum Skript
+if getattr(sys, 'frozen', False):
+    BASE_DIR = Path(sys.executable).parent
+else:
+    BASE_DIR = Path(__file__).parent
+
+DATA_DIR = BASE_DIR / "data"
+DATA_DIR.mkdir(exist_ok=True)  # wichtig, sonst kann sqlite nicht erstellen
+ARCHIVE_ROOT = DATA_DIR / "archive"
+ARCHIVE_ROOT.mkdir(parents=True, exist_ok=True)
 
 MAX_NAME_LEN = 120
 

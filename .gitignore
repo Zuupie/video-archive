@@ -6,7 +6,12 @@ __pycache__/
 .env
 .venv/
 venv/
+build/
+data/
+dist/main.app/
+main.spec
+
 
 # VS Code
 .vscode/
-cd
+.DS_Store

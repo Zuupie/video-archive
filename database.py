@@ -1,10 +1,19 @@
 import sqlite3
 import os
+import sys
+from pathlib import Path
 
-DB_PATH = "data/videos.db"
-#Hier ein Kommentar
-#hier noch ein Kommentar
-#nach ein kommentar
+# Pfad zur EXE, falls gebaut, sonst zum Skript
+if getattr(sys, 'frozen', False):
+    BASE_DIR = Path(sys.executable).parent
+else:
+    BASE_DIR = Path(__file__).parent
+
+# Datenordner erstellen
+DATA_DIR = BASE_DIR / "data"
+DATA_DIR.mkdir(exist_ok=True)  # wichtig, sonst kann sqlite nicht erstellen
+
+DB_PATH = DATA_DIR / "videos.db"
 
 def init_db():
     os.makedirs("data", exist_ok=True)
