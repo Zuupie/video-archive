@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from database import get_all_videos
+from database import get_all_videos, add_category
 from PIL import Image, ImageTk
 from pathlib import Path
 
@@ -21,6 +21,7 @@ class VideoList(tk.Frame):
         top.pack(fill="x", pady=5)
 
         tk.Button(top, text="➕ Neues Video", command=switch_to_form).pack(side="left", padx=10)
+        tk.Button(top, text="📁 Kategorien", command=self.open_category_dialog).pack(side="left")
 
         # Scrollbereich
         self.canvas = tk.Canvas(self, borderwidth=0)
@@ -170,7 +171,7 @@ class VideoList(tk.Frame):
             return
 
         # Sammle deltas im Puffer und dämpfe sie (Faktor anpassen)
-        self._scroll_buffer += -delta * 1  # 0.25 = Dämpfungs-/Sensitivitätsfaktor
+        self._scroll_buffer += -delta * 1.75  # 0.25 = Dämpfungs-/Sensitivitätsfaktor
 
         # Wenn genug Pixel im Puffer sind, führe Scroll aus
         scroll_pixels = int(self._scroll_buffer)
@@ -201,4 +202,23 @@ class VideoList(tk.Frame):
 
         # Verbrauchte Pixel aus Puffer entfernen
         self._scroll_buffer -= scroll_pixels
+
+    def open_category_dialog(self):
+        win = tk.Toplevel(self)
+        win.title("Kategorie hinzufügen")
+        win.geometry("300x120")
+        win.transient(self)
+        win.grab_set()
+
+        tk.Label(win, text="Neue Kategorie").pack(pady=5)
+        entry = tk.Entry(win, width=30)
+        entry.pack()
+
+        def save_cat():
+            name = entry.get().strip()
+            if name:
+                add_category(name)
+                win.destroy()
+
+        tk.Button(win, text="Speichern", command=save_cat).pack(pady=10)
 

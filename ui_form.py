@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from datetime import datetime
+from database import get_categories
 import os
 import re
 
@@ -8,7 +9,6 @@ from file_manager import save_video_and_thumbnail
 from database import insert_video
 
 
-CATEGORIES = ["", "Privat", "Arbeit", "Projekt", "Tutorial", "Sonstiges"]
 DATE_REGEX = r"^\d{4}-\d{2}-\d{2}$"
 
 
@@ -19,48 +19,84 @@ class VideoForm(tk.Frame):
         self.today = datetime.today().strftime("%Y-%m-%d")
         self.date_placeholder = self.today
 
-        # ---------- Titel (Pflicht) ----------
-        tk.Label(self, text="Titel *").grid(row=0, column=0, sticky="w")
-        self.title_entry = tk.Entry(self, width=40)
-        self.title_entry.grid(row=0, column=1)
+        self.grid(row=0, column=0, sticky="nsew", padx=20, pady=20)
+
+        # Grid-Setup
+        self.grid_columnconfigure(0, weight=0)
+        self.grid_columnconfigure(1, weight=1)
+
+        row = 0
+
+        # ---------- Titel ----------
+        tk.Label(self, text="Titel *").grid(row=row, column=0, sticky="w", pady=4)
+        self.title_entry = tk.Entry(self)
+        self.title_entry.grid(row=row, column=1, sticky="ew", pady=4)
+        row += 1
 
         # ---------- Beschreibung ----------
-        tk.Label(self, text="Beschreibung").grid(row=1, column=0, sticky="w")
-        self.desc_entry = tk.Entry(self, width=40)
-        self.desc_entry.grid(row=1, column=1)
+        tk.Label(self, text="Beschreibung").grid(row=row, column=0, sticky="w", pady=4)
+        self.desc_entry = tk.Text(self, height=4, wrap="word")  # 4 Zeilen, Wortumbruch
+        self.desc_entry.grid(row=row, column=1, sticky="ew", pady=4)
+        row += 1
 
         # ---------- Notiz ----------
-        tk.Label(self, text="Notiz").grid(row=2, column=0, sticky="w")
-        self.note_entry = tk.Entry(self, width=40)
-        self.note_entry.grid(row=2, column=1)
+        tk.Label(self, text="Notiz").grid(row=row, column=0, sticky="w", pady=4)
+        self.note_entry = tk.Text(self, height=3, wrap="word")  # 3 Zeilen
+        self.note_entry.grid(row=row, column=1, sticky="ew", pady=4)
+        row += 1
 
-        # ---------- Kategorie (Enum) ----------
-        tk.Label(self, text="Kategorie").grid(row=3, column=0, sticky="w")
+        # ---------- Kategorie ----------
+        tk.Label(self, text="Kategorie").grid(row=row, column=0, sticky="w", pady=4)
         self.category_var = tk.StringVar(value="")
-        self.cat_menu = tk.OptionMenu(self, self.category_var, *CATEGORIES)
-        self.cat_menu.grid(row=3, column=1, sticky="w")
+        categories = [""] + get_categories()
+        self.cat_menu = tk.OptionMenu(self, self.category_var, *categories)
+        self.cat_menu.grid(row=row, column=1, sticky="w")
+        row += 1
 
         # ---------- Datum ----------
-        tk.Label(self, text="Datum (YYYY-MM-DD)").grid(row=4, column=0, sticky="w")
-        self.date_entry = tk.Entry(self, width=40, fg="grey")
+        tk.Label(self, text="Datum (YYYY-MM-DD)").grid(row=row, column=0, sticky="w", pady=4)
+        self.date_entry = tk.Entry(self, fg="grey")
         self.date_entry.insert(0, self.date_placeholder)
-        self.date_entry.grid(row=4, column=1)
+        self.date_entry.grid(row=row, column=1, sticky="ew", pady=4)
         self.date_entry.bind("<FocusIn>", self._clear_date_placeholder)
         self.date_entry.bind("<FocusOut>", self._restore_date_placeholder)
+        row += 1
 
-        # ---------- Video-Pfad (Pflicht) ----------
-        tk.Button(self, text="Video auswählen *", command=self.pick_video).grid(row=5, column=0)
-        self.video_path = tk.Label(self, text="", fg="grey", wraplength=300, anchor="w", justify="left")
-        self.video_path.grid(row=5, column=1, sticky="w")
+        # ---------- Video ----------
+        tk.Button(self, text="🎬 Video auswählen *", command=self.pick_video)\
+            .grid(row=row, column=0, sticky="w", pady=4)
+
+        self.video_path = tk.Label(
+            self,
+            text="",
+            fg="grey",
+            anchor="w",
+            justify="left",
+            wraplength=600
+        )
+        self.video_path.grid(row=row, column=1, sticky="ew", pady=4)
+        row += 1
 
         # ---------- Thumbnail ----------
-        tk.Button(self, text="Thumbnail auswählen", command=self.pick_thumbnail).grid(row=6, column=0)
-        self.thumb_path = tk.Label(self, text="", fg="grey", wraplength=300, anchor="w", justify="left")
-        self.thumb_path.grid(row=6, column=1, sticky="w")
+        tk.Button(self, text="🖼 Thumbnail auswählen", command=self.pick_thumbnail)\
+            .grid(row=row, column=0, sticky="w", pady=4)
+
+        self.thumb_path = tk.Label(
+            self,
+            text="",
+            fg="grey",
+            anchor="w",
+            justify="left",
+            wraplength=600
+        )
+        self.thumb_path.grid(row=row, column=1, sticky="ew", pady=4)
+        row += 1
 
         # ---------- Buttons ----------
-        tk.Button(self, text="Speichern", command=self.save).grid(row=7, column=0, pady=10)
-        tk.Button(self, text="Zur Liste", command=switch_to_list).grid(row=7, column=1, pady=10)
+        btns = tk.Frame(self)
+        btns.grid(row=row, column=0, columnspan=2, pady=20, sticky="e")
+        tk.Button(btns, text="Speichern", command=self.save).pack(side="right", padx=5)
+        tk.Button(btns, text="Zur Liste", command=switch_to_list).pack(side="right")
 
     # ---------------- Actions ----------------
 
@@ -91,8 +127,8 @@ class VideoForm(tk.Frame):
         data = {}
 
         title = self.title_entry.get().strip()
-        description = self.desc_entry.get().strip()
-        note = self.note_entry.get().strip()
+        description = self.desc_entry.get("1.0", "end-1c").strip()
+        note = self.note_entry.get("1.0", "end-1c").strip()
         category = self.category_var.get()
         date = self.date_entry.get().strip()
         video = self.video_path.cget("text").strip()

@@ -33,6 +33,18 @@ def init_db():
         )
     """)
 
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS categories (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT UNIQUE
+        )
+    """)
+
+    # Default-Kategorien einmalig anlegen
+    for cat in ["Privat", "Let's Play", "Tutorial", "Review", "Vlog"]:
+        c.execute("INSERT OR IGNORE INTO categories (name) VALUES (?)", (cat,))
+
+
     conn.commit()
     conn.close()
 
@@ -67,3 +79,19 @@ def get_all_videos():
 
     conn.close()
     return rows
+
+def get_categories():
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT name FROM categories ORDER BY name")
+    rows = c.fetchall()
+    conn.close()
+    return [r[0] for r in rows]
+
+
+def add_category(name):
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("INSERT OR IGNORE INTO categories (name) VALUES (?)", (name,))
+    conn.commit()
+    conn.close()
