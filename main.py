@@ -9,6 +9,10 @@ def main():
     root = tk.Tk()
     root.title("Video Archiv App")
 
+    # gutes Startlayout
+    root.geometry("1100x700")
+    root.minsize(900, 600)
+
     container = tk.Frame(root)
     container.pack(fill="both", expand=True)
 
