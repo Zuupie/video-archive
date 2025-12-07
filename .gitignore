@@ -8,7 +8,6 @@ __pycache__/
 venv/
 build/
 data/
-dist/
 main.spec
 
 
