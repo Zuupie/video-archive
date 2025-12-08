@@ -4,6 +4,8 @@ A lightweight desktop application to locally archive and organize your own (Yout
 
 Developed as a final submission for the MiniHackathon 3.0
 
+<img width="1168" height="796" alt="screenshot-VideoArchiv" src="https://github.com/user-attachments/assets/4b7256ba-777a-4704-a70b-6b433ff4958f" />
+
 ---
 
 ## ✨ Features
@@ -40,6 +42,9 @@ Developed as a final submission for the MiniHackathon 3.0
 - the SQLite database
 - archived video files
 - archived thumbnail files
+
+<img width="312" height="171" alt="datastructure-VideoArchiv" src="https://github.com/user-attachments/assets/057445f1-1c5f-4d91-af26-bc39b0c07fa2" />
+
 
 ---
 
